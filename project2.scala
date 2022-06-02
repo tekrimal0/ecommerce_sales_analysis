@@ -17,7 +17,7 @@ object project2 {
       .enableHiveSupport()
       .getOrCreate()
 
-    println("Welcome to the login page to access ecommerce sales analysis!\n" +
+    print("Welcome to the login page to access ecommerce sales analysis!\n" +
       "Please enter\n" +
       "1 to login\n" +
       "2 to exit\n" +
@@ -29,7 +29,7 @@ object project2 {
       case "2" =>
         sys.exit()
       case deafult =>
-        println("Invalid input, please try again.")
+        println("Invalid input, please try again.\n")
         loginmenu()
     }
 
@@ -38,6 +38,8 @@ object project2 {
         "Please enter\n" +
         "1 to login\n" +
         "2 to exit")
+      print("Please choose your entry: ")
+      print("")
       var choice = scala.io.StdIn.readLine()
       choice match {
         case "1" =>
@@ -45,43 +47,49 @@ object project2 {
         case "2" =>
           sys.exit()
         case deafult =>
-          println("Invalid input, please try again.")
+          println("Invalid input, please try again.\n")
           loginmenu()
       }
     }
     def login(spark: SparkSession): Unit = {
       //import sqlContext.implicits
-      println("Enter username: ")
+      print("Enter username: ")
       var user_in = scala.io.StdIn.readLine()
       val logincolumns = Seq("username", "password")
       val loginDF = spark.read.csv("Inputs/logintable").toDF(logincolumns: _*)
       loginDF.createOrReplaceTempView("logindata")
       var first1 = spark.sql("SELECT username FROM logindata WHERE username = '" + user_in + "'")
       if (first1.count() == 1) {
-        println("Enter password: ")
+        print("Enter password: ")
         var password_in = scala.io.StdIn.readLine()
         val logincolumns = Seq("username", "password")
         val loginDF = spark.read.csv("Inputs/logintable").toDF(logincolumns: _*)
         loginDF.createOrReplaceTempView("logindata")
         var first2 = spark.sql("SELECT password FROM logindata WHERE password = '" + password_in + "'")
         if (first2.count() == 1) {
-          println("Login successful\n")
+          println("Login successful!\n")
           mainmenu()
         }
         else {
-          println("Incorrect password, please try again")
+          println("Incorrect password, please try again.")
+          print("Enter password again: ")
           var password_in2 = scala.io.StdIn.readLine()
           val logincolumns = Seq("username", "password")
           val loginDF = spark.read.csv("Inputs//logintable").toDF(logincolumns: _*)
           loginDF.createOrReplaceTempView("logindata")
           var first3 = spark.sql("SELECT password FROM logindata WHERE password = '" + password_in2 + "'")
-          if (first3.count() > 1) {
-            println("Login successful")
+          if (first3.count() == 1) {
+            println("Login successful!\n")
+            mainmenu()
+          }
+          else {
+            println("Incorrect password again: going back to login page, please try again.\n")
+            loginmenu()
           }
         }
       }
       else {
-        println("Incorrect username, please try again")
+        println("Incorrect username, please try again.\n")
         loginmenu()
       }
     }
@@ -93,7 +101,7 @@ object project2 {
         " 2 to see popularity of product change throughout year per country\n" +
         " 3 to see location with highest traffic of sales\n" +
         " 4 to see time with highest traffic of sales per country")
-      print("Enter your choice: ")
+      print("Please choose you entry: ")
       var choice = scala.io.StdIn.readLine()
       choice match {
         case "1" =>
@@ -133,7 +141,7 @@ object project2 {
           BSCOIPC.show(10)
           Q1(spark)
         case "2" =>
-          println("Please enter country of choice: ")
+          print("Please enter country of choice: ")
           val country_input = scala.io.StdIn.readLine()
           val first1 = ecommerceDF.groupBy("Product_Category", "Country").count()
           val first2 = first1.withColumn("rank", dense_rank().over(Window.partitionBy($"Country").orderBy($"count".desc)))
@@ -143,7 +151,7 @@ object project2 {
         case "3" =>
           val first3 = ecommerceDF.groupBy("Product_Category").count()
           val first4 = first3.orderBy($"Count".desc)
-          first4.show(5)
+          first4.show(10)
           Q1(spark)
         case "4" =>
           print("Please enter product category of choice: ")
@@ -207,7 +215,7 @@ object project2 {
           val LWHS = first2.show(10)
           Q3(spark)
         case "2" =>
-          println("Please enter city of choice: ")
+          print("Please enter city of choice: ")
           val city_in = scala.io.StdIn.readLine()
           val first1 = ecommerceDF.groupBy("City", "Country").count()
           val first2 = first1.orderBy($"Count".desc)
@@ -237,7 +245,7 @@ object project2 {
           val step1 = ecommerceDF.select("DateTime", "Product_Name", "Country").withColumn("Hour", hour(col("DateTime")))
           val step2 = step1.groupBy("Hour").count()
           val BSPH = step2.orderBy($"count".desc)
-          BSPH.show(5)
+          BSPH.show(10)
           Q4(spark)
         case "2" =>
           val step1 = ecommerceDF.select("DateTime", "Product_Name", "Country").withColumn("Hour", hour(col("DateTime")))

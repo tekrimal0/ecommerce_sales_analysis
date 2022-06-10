@@ -12,10 +12,11 @@ Spark was used to read csv file with data and convert to dataframe and spark SQL
 Scala was used to create login and main menu to access the ecommerce sales analysis dashboard.
 
 Group Name: Deep Divers
-Members: Tek Rimal
-         Ethan Kempf
-         Tyller Mendoza
-         Lowson Merilien
+
+Members: Tek Rimal,
+         Ethan Kempf,
+         Tyller Mendoza,
+         Lowson Merilien,
          
          
 
